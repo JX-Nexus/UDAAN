@@ -114,7 +114,7 @@ export default function UdaanLanding() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl font-bold">Ready to Take Off with 🕊 Udaan?</h2>
+          <h2 className="text-4xl font-bold">Ready to Take Off with Udaan?</h2>
           <p className="mt-3 text-slate-100">
             Start your personalized roadmap today and see your future take shape.
           </p>
