@@ -1,0 +1,1 @@
+Use "npx drizzle-kit push" after updating schema to migrate to db
