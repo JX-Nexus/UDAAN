@@ -8,7 +8,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { sql } from "drizzle-orm";
 
 
-export const generateAccessAndRefreshTokens = async (userId) => {
+const generateAccessAndRefreshTokens = async (userId) => {
  try {
     const rows = await db.select().from(Users).where(eq(Users.id, userId));
   if (!rows.length) throw new ApiError(404, "User not found");
@@ -38,8 +38,10 @@ export const generateAccessAndRefreshTokens = async (userId) => {
   }
 };
 
-const createUser = asyncHandler(async (req, res) => {
+const createUser = asyncHandler(async (req, res, next) => {
+  
   try {
+   
     let { name, username, email, age, password } = req.body;
 
     if (!name || !username || !email || !age || !password)
