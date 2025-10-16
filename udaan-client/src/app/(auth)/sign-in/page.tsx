@@ -1,8 +1,89 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { signInSchema, type  SignInSchema } from "@/schemas/sign-in.schema";
+import authService from "@/services/auth.service";
 
 export default function Page() {
+  const router = useRouter();
+
+  const [formData, setFormData] = useState<SignInSchema>({
+    email: "",
+    password: "",
+  });
+
+  const [errors, setErrors] = useState<Partial<Record<keyof SignInSchema, string>>>({});
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const result = signInSchema.safeParse(formData);
+
+    if (!result.success) {
+      const fieldErrors: Partial<Record<keyof SignInSchema, string>> = {};
+      result.error?.issues?.forEach((issue) => {
+        const field = issue.path?.[0] as keyof SignInSchema;
+        if (field) fieldErrors[field] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
+    try {
+      const data = await authService.signIn(formData);
+
+      if (!data || !data.success) {
+        toast("Login Failed ❌", {
+          description: data?.message || "Invalid credentials, please try again.",
+          duration: 5000,
+          classNames: {
+            toast:
+              "bg-red-100 border border-red-500 text-red-800 dark:bg-red-950 dark:text-red-200 dark:border-red-700",
+            description:
+              "text-red-700 dark:text-red-300 text-sm font-medium tracking-wide",
+            actionButton:
+              "bg-red-600 text-white hover:bg-red-700 dark:bg-red-800 dark:hover:bg-red-700",
+          },
+        });
+        return;
+      }
+
+      toast("Welcome Back 👋", {
+        description: data.message || "Signed in successfully!",
+        action: {
+          label: "Dashboard",
+          onClick: () => router.push("/dashboard"),
+        },
+      });
+    } catch (err: any) {
+      console.error("❌ API Error:", err?.response?.data || err);
+      const message =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message ||
+        "Unable to connect to the server. Please try again later.";
+
+      toast.error("Login Failed", {
+        description: message,
+        style: {
+          "--normal-bg":
+            "light-dark(hsl(var(--destructive)), color-mix(in oklab, hsl(var(--destructive)) 60%, hsl(var(--background))))",
+          "--normal-text": "hsl(var(--destructive-foreground))",
+          "--normal-border": "transparent",
+        } as React.CSSProperties,
+      });
+    }
+  };
+
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-sky-100 via-white to-indigo-100 flex items-center justify-center p-4 overflow-hidden">
       {/* Floating Background Aesthetic */}
@@ -30,8 +111,8 @@ export default function Page() {
           </p>
         </div>
 
-        {/* Form (visual only) */}
-        <form className="space-y-6">
+        {/* Form */}
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor="email"
@@ -43,8 +124,11 @@ export default function Page() {
               type="email"
               id="email"
               placeholder="you@example.com"
+              value={formData.email}
+              onChange={handleChange}
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none transition"
             />
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
 
           <div>
@@ -58,8 +142,11 @@ export default function Page() {
               type="password"
               id="password"
               placeholder="••••••••"
+              value={formData.password}
+              onChange={handleChange}
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none transition"
             />
+            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
 
           <div className="flex justify-between items-center text-sm">
@@ -79,7 +166,7 @@ export default function Page() {
           </div>
 
           <button
-            type="button"
+            type="submit"
             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg shadow-md transition"
           >
             Sign In

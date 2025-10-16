@@ -1,9 +1,9 @@
 "use client";
-import Image from "next/image";
 import { useState } from "react";
 import { createUserSchema, type CreateUserSchema } from "@/schemas/create-user.schema";
 import { toast } from "sonner"
 import authService from "@/services/auth.service";
+import { useRouter } from 'next/navigation'
 
 export default function Page() {
 const [formData, setFormData] = useState<CreateUserSchema>({
@@ -13,6 +13,7 @@ const [formData, setFormData] = useState<CreateUserSchema>({
   password: "",
   age: "",
 });
+ const router = useRouter()
   function getPasswordStrength(password: string) {
   let strength = 0;
   if (password.length >= 8) strength++;
@@ -25,8 +26,6 @@ const [formData, setFormData] = useState<CreateUserSchema>({
   if (strength >= 3) return { level: "Strong", color: "bg-green-500" };
   return { level: "Weak", color: "bg-red-500" };
 }
-  const [isLoading, setIsLoading] = useState(false);  
-
   const [errors, setErrors] = useState<Partial<Record<keyof CreateUserSchema, string>>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +67,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         description: data.message || "Welcome to Udaan!",
         action: {
           label: "Login",
-          onClick: () => console.log("Redirect to login"),
+         onClick: () => router.push('/sign-in'),
         },
       });
     } catch (err: any) {
