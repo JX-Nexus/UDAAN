@@ -207,7 +207,8 @@ export default function Page() {
         </div>
 
         {/* Footer */}
-        <p className="mt-8 text-center text-sm text-slate-500">
+        <div>
+          <p className="mt-8 text-center text-sm text-slate-500">
           Don’t have an account?{" "}
           <Link
             href="/create-user"
@@ -220,6 +221,7 @@ export default function Page() {
         <p className="text-center mt-4 text-[13px] text-slate-400">
           Built by <span className="font-semibold text-indigo-600">JX Nexus</span>
         </p>
+        </div>
       </div>
     </div>
   );

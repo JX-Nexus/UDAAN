@@ -6,7 +6,7 @@ export class AuthService {
   async createAccount(userData: CreateUserSchema) {
     try {
       const res = await axios.post("/api/users/create", userData);
-      return res.data; // Return the data, let frontend handle toasts
+      return res.data;
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const message =
@@ -23,7 +23,7 @@ export class AuthService {
   async signIn(credentials: SignInSchema) {
     try {
       const res = await axios.post("/api/users/sign-in", credentials);
-      return res.data; // Return backend data (success, message, token, etc.)
+      return res.data;
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const message =
@@ -36,6 +36,47 @@ export class AuthService {
       throw new Error("Something went wrong. Please try again.");
     }
   }
+
+  async refreshAccessToken() {
+    try {
+      const res = await axios.post("/api/users/refresh-token");
+      return res.data; // ✅ returns data just like other methods
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const message =
+          error.response?.data?.error ||
+          error.response?.data?.message ||
+          "Session expired. Please log in again.";
+        console.log(error.response);
+        throw new Error(message);
+      }
+      throw new Error("Something went wrong while refreshing token.");
+    }
+  }
+async getCurrentUser(cookieHeader?: string) {
+  try {
+    const res = await axios.get("/api/users/current-user", {
+      headers: cookieHeader
+        ? { Cookie: cookieHeader } // ✅ send cookies manually (for SSR/server requests)
+        : undefined,
+      withCredentials: true, // ✅ ensures cookies are sent automatically in browser
+    });
+
+    return res.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      const message =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Session expired. Unable to fetch user.";
+      console.log(error.response);
+      throw new Error(message);
+    }
+
+    throw new Error("Something went wrong while fetching user.");
+  }
+}
+
 }
 
 const authService = new AuthService();

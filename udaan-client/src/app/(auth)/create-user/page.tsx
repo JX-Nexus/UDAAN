@@ -4,6 +4,7 @@ import { createUserSchema, type CreateUserSchema } from "@/schemas/create-user.s
 import { toast } from "sonner"
 import authService from "@/services/auth.service";
 import { useRouter } from 'next/navigation'
+import Image from "next/image";
 
 export default function Page() {
 const [formData, setFormData] = useState<CreateUserSchema>({

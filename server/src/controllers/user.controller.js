@@ -6,6 +6,7 @@ import { eq, or } from "drizzle-orm";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { sql } from "drizzle-orm";
+import jwt  from "jsonwebtoken";
 
 
 const generateAccessAndRefreshTokens = async (userId) => {
@@ -188,11 +189,81 @@ const signOut = asyncHandler(async (req, res) => {
     .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, {}, "User logged out ✅"));
 });
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  const incomingRefreshToken =
+    req.cookies?.refreshToken || req.body?.refreshToken;
+
+  if (!incomingRefreshToken)
+    throw new ApiError(401, "Unauthorized request: no refresh token");
+
+  try {
+    // verify token signature
+    const decoded = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    if (!decoded?.id) throw new ApiError(401, "Invalid refresh token payload");
+
+    // find user
+    const rows = await db.select().from(Users).where(eq(Users.id, decoded.id));
+    if (!rows.length) throw new ApiError(401, "User not found");
+
+    const user = rows[0];
+
+    // ensure refresh token matches what’s stored
+    if (incomingRefreshToken !== user.refreshToken)
+      throw new ApiError(401, "Refresh token expired or already used");
+
+    // issue new tokens
+    const { accessToken, refreshToken: newRefreshToken } =
+      await generateAccessAndRefreshTokens(user.id);
+
+    // set secure cookies
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+    };
+
+    res
+      .status(200)
+      .cookie("accessToken", accessToken, cookieOptions)
+      .cookie("refreshToken", newRefreshToken, cookieOptions)
+      .json(
+        new ApiResponse(
+          200,
+          { accessToken, refreshToken: newRefreshToken },
+          "Access token refreshed ✅"
+        )
+      );
+  } catch (err) {
+    throw new ApiError(401, err?.message || "Invalid refresh token");
+  }
+});
+const getCurrentUser = asyncHandler(async (req, res) => {
+  if (!req.user) {
+    // just a safety fallback in case JWT middleware fails silently
+    throw new ApiError(401, "Unauthorized: no user in request");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        req.user,
+        "User fetched successfully ✅"
+      )
+    );
+});
 
 
 export { 
         createUser,
         signIn,
-        signOut
+        signOut,
+        refreshAccessToken,
+        getCurrentUser
 
         };
