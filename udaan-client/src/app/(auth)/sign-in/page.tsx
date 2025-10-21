@@ -6,9 +6,12 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { signInSchema, type  SignInSchema } from "@/schemas/sign-in.schema";
 import authService from "@/services/auth.service";
+import { useAppDispatch, useAppSelector  } from "@/lib/hooks";
+import { login } from "@/lib/slice/auth/authSlice";
 
 export default function Page() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const [formData, setFormData] = useState<SignInSchema>({
     email: "",
@@ -56,14 +59,17 @@ export default function Page() {
         });
         return;
       }
-
+      dispatch(login({ userData: data.data }));
       toast("Welcome Back 👋", {
         description: data.message || "Signed in successfully!",
         action: {
-          label: "Dashboard",
+          label: "Success",
           onClick: () => router.push("/dashboard"),
         },
       });
+       setTimeout(() => {
+      router.push("/dashboard");
+    }, 2500);
     } catch (err: any) {
       console.error("❌ API Error:", err?.response?.data || err);
       const message =

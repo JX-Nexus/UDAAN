@@ -1,9 +1,11 @@
 "use client"
 import React from 'react'
-
+import UserAvatar from '@/components/UserAvatar'
+import QuizQuestions from '@/components/QuizQuestions'
+import Link from 'next/link'
 function page() {
   return (
-    <div>page</div>
+  <Link href={"/quiz"}>fdg</Link>
   )
 }
 

@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { db } from "../db/index.js";
-import { Users } from "../schema/schema.js";
+import { Users } from "../schema/index.js";
 import { userUtils } from "../db/utils.js";
 import { eq, or } from "drizzle-orm";
 import { ApiError } from "../utils/ApiError.js";
@@ -153,6 +153,7 @@ const signIn = asyncHandler(async(req,res)=>{
             id: user.id,
             username: user.username,
             email: user.email,
+            name: user.name,
             accessToken,
             refreshToken,
             },

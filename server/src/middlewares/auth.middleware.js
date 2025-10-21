@@ -2,7 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 import { db } from "../db/index.js";
-import { Users } from "../schema/schema.js";
+import { Users } from "../schema/index.js";
 import { eq } from "drizzle-orm";
 
 export const verifyJWT = asyncHandler(async (req, _, next) => {
@@ -32,6 +32,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
       username: user.username,
       email: user.email,
       role: user.role,
+      name: user.name,
     };
 
     next();

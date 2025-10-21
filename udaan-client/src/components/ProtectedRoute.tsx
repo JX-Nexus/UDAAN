@@ -1,40 +1,37 @@
-"use client"
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import authService from "@/services/auth.service";
+'use client'
+
+import React, { useEffect } from 'react'
+import { useAppSelector } from '@/lib/hooks'
+import { useRouter } from 'next/navigation'
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
-  authentication?: boolean; // true = protected page, false = guest-only page
+  children: React.ReactNode
+  authentication?: boolean // true = protected page, false = guest-only page
 }
 
-export default async function ProtectedRoute({
+export default function ProtectedRoute({
   children,
   authentication = true,
 }: ProtectedRouteProps) {
-  const cookieStore = cookies();
-  const cookieHeader = cookieStore.toString(); // serialize cookies for header
+  const router = useRouter()
+  const { status, userData } = useAppSelector((state) => state.auth)
 
-  let user: any = null;
-
-  try {
-    // Send backend request with cookies manually forwarded
-    const res = await authService.getCurrentUser(cookieHeader);
-    console.log(res)
-    if (res.data?.success) {
-      user = res.data.data;
+  useEffect(() => {
+    // If page requires authentication but user is not logged in → redirect to login
+    if (authentication && !status) {
+      router.replace('/sign-in')
     }
-  } catch (err: any) {
-    console.error("Auth check failed:", err.response?.data || err.message);
+
+    // If page is guest-only but user *is* logged in → redirect to dashboard
+    if (!authentication && status) {
+      router.replace('/dashboard')
+    }
+  }, [authentication, status, router])
+
+  // prevent flashing unauthorized content during redirect
+  if (authentication && !status) {
+    return null // could show a loader/spinner here
   }
 
-  // 🔒 redirect logic
-  if (authentication && !user) {
-    redirect("/sign-in");
-  } else if (!authentication && user) {
-    redirect("/dashboard");
-  }
-
-  // ✅ authorized
-  return <>{children}</>;
+  return <>{children}</>
 }

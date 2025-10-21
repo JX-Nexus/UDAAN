@@ -2,6 +2,7 @@ import axios from "axios";
 import { CreateUserSchema } from "@/schemas/create-user.schema";
 import { SignInSchema } from "@/schemas/sign-in.schema";
 
+
 export class AuthService {
   async createAccount(userData: CreateUserSchema) {
     try {
@@ -55,12 +56,13 @@ export class AuthService {
   }
 async getCurrentUser(cookieHeader?: string) {
   try {
-    const res = await axios.get("/api/users/current-user", {
+    const res = await axios.get(`/api/users/current-user`, {
       headers: cookieHeader
         ? { Cookie: cookieHeader } // ✅ send cookies manually (for SSR/server requests)
         : undefined,
       withCredentials: true, // ✅ ensures cookies are sent automatically in browser
     });
+    
 
     return res.data;
   } catch (error: unknown) {

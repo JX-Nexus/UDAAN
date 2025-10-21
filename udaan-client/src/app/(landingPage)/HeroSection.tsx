@@ -3,8 +3,10 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 export default function HeroSection() {
+  const router = useRouter()
   return (
     <main className="flex-1 flex flex-col items-center justify-center text-center px-6 py-12">
       <motion.h1
@@ -33,7 +35,11 @@ export default function HeroSection() {
         className="mt-8 flex flex-col sm:flex-row gap-3 w-full max-w-md"
       >
         <Input placeholder="Enter your email to begin your journey" className="text-base" />
-        <Button size="lg" className="flex-1 bg-indigo-600 hover:bg-indigo-700">
+        <Button
+          size="lg"
+          className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+          onClick={() => router.push("/quiz")}
+        >
           Start Now
         </Button>
       </motion.div>
