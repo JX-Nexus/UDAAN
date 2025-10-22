@@ -3,8 +3,14 @@
 import React, { useState } from 'react'
 import QuizQuestions from '@/components/QuizQuestions'
 import Quiz, { calculateQuizResults } from '@/lib/quiz'
+import { useAppDispatch } from "@/lib/hooks"
+import { setProcessedData, setRecommendations  } from '@/lib/slice/assessment/assessmentSlice'
+import careerService from "@/services/career.service"
+import { useRouter } from "next/navigation"
 
 export default function Page() {
+  const router = useRouter()
+  const dispatch = useAppDispatch()
   const quiz = Quiz.quiz
 
   const [responses, setResponses] = useState<
@@ -47,23 +53,37 @@ export default function Page() {
   }
 
   // ✅ Fixed handleSubmit to pass correct format to calculateQuizResults
-  const handleSubmit = () => {
-    const rawResponses = Object.values(responses) // [{ id, category, subfield, score }]
-    const formattedResponses = Object.fromEntries(
-      rawResponses.map((r) => [r.id, r.score]) // { 1: 3, 2: 5, ... }
-    )
-const results = calculateQuizResults(formattedResponses)
-    console.log('✅ Formatted Results:', formattedResponses)
-    console.log('✅ Raw Responses:', rawResponses)
-    console.log('✅ Calculated Results:', results)
+const handleSubmit = async () => {
+  const rawResponses = Object.values(responses) // [{ id, category, subfield, score }]
+  const formattedResponses = Object.fromEntries(
+    rawResponses.map((r) => [r.id, r.score]) // { 1: 3, 2: 5, ... }
+  )
 
-    const answeredCount = Object.keys(responses).length
-    const completion = ((answeredCount / quiz.questions.length) * 100).toFixed(0)
+  const results = calculateQuizResults(formattedResponses)
 
-    alert(
-      `✅ You completed ${completion}% of the quiz!\nCheck console for detailed results.`
+  try {
+    // ✅ Send to backend
+    console.log(results)
+    const backendRes = await careerService.getCareer(
+      { quizAnswers: rawResponses },
+      results
     )
+
+    console.log("✅ Backend response:", backendRes)
+
+    // ✅ Store both processed and recommended careers in Redux
+    dispatch(setProcessedData(results))
+    if (backendRes?.careers) {
+      dispatch(setRecommendations(backendRes.careers))
+    }
+
+    // ✅ Redirect to results page
+    // router.push("/results")
+  } catch (err: any) {
+    console.error("❌ Submission failed:", err.message)
+    alert("Something went wrong while submitting your results.")
   }
+}
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-white to-gray-100 py-10 px-6">
