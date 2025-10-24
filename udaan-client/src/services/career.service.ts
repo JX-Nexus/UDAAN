@@ -11,12 +11,12 @@ export class CareerService {
       }
 
       // 🧠 Real backend call (commented out for now)
-      /*
-      const res = await axios.post("/api/career/submit", payload, {
+      
+      const res = await axios.post("/api/career/recommendation", payload, {
         withCredentials: true, // include auth cookies if needed
       });
       return res.data;
-      */
+      
 
       // 🧩 Mock response (until backend is ready)
       const mockResponse = {

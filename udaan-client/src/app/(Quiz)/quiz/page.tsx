@@ -78,7 +78,7 @@ const handleSubmit = async () => {
     }
 
     // ✅ Redirect to results page
-    // router.push("/results")
+    router.push("/results")
   } catch (err: any) {
     console.error("❌ Submission failed:", err.message)
     alert("Something went wrong while submitting your results.")
