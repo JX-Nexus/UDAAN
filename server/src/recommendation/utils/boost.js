@@ -17,10 +17,11 @@ export function applyBoosts(
   reasons,
   careerName
 ) {
+
   // ================================
   // 🗣️ SOCIAL + COMMUNICATION BOOSTS
   // ================================
-
+  
   if (Interest.Social > 5 && Aptitude.Communication > 5) {
     confidence += 3;
     reasons.push(
@@ -205,6 +206,18 @@ if (totalBoosts > 5) {
   confidence -= (totalBoosts - 5) * 2; 
   reasons.push("Balanced excessive synergy — too many overlapping strengths slightly normalized.");
 }
+// 🧭 Social Impact + Realistic + Structure → civic or NGO work
+if (ValuesMotivation.SocialImpact > 5 && Interest.Realistic > 5 && Interest.Conventional > 4) {
+  confidence += 5;
+  reasons.push("Practical and socially-driven → ideal for environmental, civic, or NGO-related roles.");
+}
+
+// SocialImpact + PlanningStyle → policy & public administration
+if (ValuesMotivation.SocialImpact > 5 && Personality.PlanningStyle > 4) {
+  confidence += 4;
+  reasons.push("Strong planning and social motivation → fits policy, governance, or project coordination careers.");
+}
+
 
   return confidence;
 }

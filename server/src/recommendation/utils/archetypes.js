@@ -147,6 +147,11 @@ export function detectArchetype(
   description = "Grounded and curious, skilled at applying creativity to practical, real-world design. Prefers functional beauty and order.";
   strengths = ["Practical Creativity", "Curiosity", "Visual Thinking"];
 }
+if (Interest.Realistic > 5 && ValuesMotivation.SocialImpact > 5 && Interest.Conventional > 4) {
+  name = "Structured Altruist";
+  description = "Practical, responsible, and motivated by social good. Thrives in organized environments that make a tangible difference.";
+  strengths = ["Dependable", "Helpful", "Structured"];
+}
 
 
   // ===========================================================

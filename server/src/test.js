@@ -8,7 +8,7 @@ import { generateCareerRecommendations } from "./recommendation/career.engine.js
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.get("/quiz", async (req, res) => {
+app.get("/", async (req, res) => {
   const rand = () => {
     const base = Math.random();
     if (base < 0.1) return 1 + Math.random();
