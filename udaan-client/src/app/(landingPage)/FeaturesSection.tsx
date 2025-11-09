@@ -6,7 +6,7 @@ export default function FeaturesSection() {
     {
       title: "Smart Recommendations",
       desc: "Get college & course suggestions aligned with your strengths and goals.",
-      route: "/career",
+      route: "/quiz",
     },
     {
       title: "Internship Match",

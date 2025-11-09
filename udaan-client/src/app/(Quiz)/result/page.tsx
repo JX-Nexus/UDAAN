@@ -11,12 +11,7 @@ export default function ResultPage() {
   const recommendations = useAppSelector((state) => state.assessment.recommendations)
   const processedData = useAppSelector((state) => state.assessment.processedData)
 
-  // 🧠 Redirect to quiz if no results in Redux (e.g. user refreshed)
-  useEffect(() => {
-    if (!recommendations || recommendations.length === 0) {
-      router.replace('/quiz') // Redirect to quiz if no data
-    }
-  }, [recommendations, router])
+
 
   if (!recommendations || recommendations.length === 0) {
     return (
