@@ -19,52 +19,63 @@ const careerRecommendation = asyncHandler(async (req, res, next) => {
     // Run the recommendation engine
     const result = await generateCareerRecommendations(processedData);
 
-    // destructure recommendation output
-    const { recommendations = [], feedback = [], archetype } = result.output || {};
+    // support two possible shapes: result.output.* or result.* (backwards compatibility)
+    const output = result?.output ?? result ?? {};
+    const recommendations = Array.isArray(output.recommendations) ? output.recommendations : [];
+    const feedback = Array.isArray(output.feedback) ? output.feedback : [];
+    const archetype = output.archetype ?? output.archetype ?? {};
 
     // format frontend-friendly response by enriching recommendations
     const enrichedRecommendations = recommendations.map((rec) => {
-      // find corresponding entry from careerData
-      const matchedCareer = careerData.find(
-        (c) =>
-          c.title.toLowerCase() === rec.career.toLowerCase() ||
-          c.slug.toLowerCase() === rec.career.replace(/\s+/g, "-").toLowerCase()
-      );
+      const recCareer = (rec.career || rec.title || "").toString();
+      const candidateSlug = recCareer.replace(/\s+/g, "-").toLowerCase();
 
-      return {
-        icon: matchedCareer?.icon || "🎓",
-        title: matchedCareer?.title || rec.career,
-        slug: matchedCareer?.slug || rec.career.toLowerCase().replace(/\s+/g, "-"),
-        type: matchedCareer?.type || "Career",
-        confidence: rec.confidence || 0,
-        description: matchedCareer?.description || "from backend",
-        reason: rec.reason || "from backend",
-        feedback: feedback || [],
-        jobs: matchedCareer?.jobs || []
-      };
+      // find corresponding entry from careerData (tolerant to missing fields)
+      const matchedCareer = careerData.find((c) => {
+        if (!c) return false;
+        const title = (c.title || "").toString().toLowerCase();
+        const slug = (c.slug || "").toString().toLowerCase();
+        return title === recCareer.toLowerCase() || slug === candidateSlug;
+      });
+      const results = {
+          icon: matchedCareer?.icon || "🎓",
+        title: matchedCareer?.title || recCareer || "Unknown Career",
+        slug:
+          matchedCareer?.slug ||
+          (recCareer ? recCareer.toLowerCase().replace(/\s+/g, "-") : "unknown"),
+        type: matchedCareer?.type || rec.type || "Career",
+        confidence: typeof rec.confidence === "number" ? rec.confidence : 0,
+        description: rec.reason || rec.description || "Alignment-based recommendation",
+        feedback,
+        jobs: matchedCareer?.jobs || rec.jobs || [],
+      }
+      console.log(results)
+      return {results};
     });
 
-    // optional: save the generated recommendation logs
+    // optional: save the generated recommendation logs (commented — enable if needed)
     // await db.recommendations.create({ userId: req.user?.id, data: enrichedRecommendations });
-    console.log(enrichedRecommendationsgit add .
-    )
+
+    // success response
     return res.status(201).json(
-      new ApiResponse(201, {
-        archetype: archetype || {},
-        recommendations: enrichedRecommendations,
-        feedback: feedback || []
-      }, "Career recommendations generated successfully ✅")
+      new ApiResponse(
+        201,
+        {
+          archetype,
+          recommendations: enrichedRecommendations,
+          feedback,
+        },
+        "Career recommendations generated successfully ✅"
+      )
     );
   } catch (err) {
-    console.error("❌ Recommendation Error:", err.message);
+    console.error("❌ Recommendation Error:", err?.message || err);
 
     if (err instanceof ApiError) {
       return res.status(err.statusCode).json({ error: err.message });
     }
 
-    return res
-      .status(500)
-      .json({ error: "Internal server error", details: err.message });
+    return res.status(500).json({ error: "Internal server error", details: err?.message || String(err) });
   }
 });
 

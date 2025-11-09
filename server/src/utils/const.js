@@ -177,7 +177,7 @@ ValuesMotivation: { Innovation: 0.7, Recognition: 0.6 },
 },
 },
 {
-career: "B.Des in Animation & Graphics",
+career: "Animation & Motion Graphics",
 traits: {
 Interest: { Artistic: 0.9 },
 Aptitude: { Creativity: 0.9 },
@@ -186,7 +186,7 @@ ValuesMotivation: { Innovation: 0.7 },
 },
 },
 {
-career: "BA in Music Production",
+career: "Music Production / Audio Engineering",
 traits: {
 Interest: { Artistic: 0.8 },
 Aptitude: { Creativity: 0.8 },

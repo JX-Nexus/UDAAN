@@ -41,26 +41,55 @@ export default function Page() {
   const handlePrev = () => page > 1 && setPage((p) => p - 1)
 
   // ✅ Submit to backend + store result
-  const handleSubmit = async () => {
-    const rawResponses = Object.values(responses)
-    const formattedResponses = Object.fromEntries(rawResponses.map((r) => [r.id, r.score]))
-    const results = calculateQuizResults(formattedResponses)
+const handleSubmit = async () => {
+  const rawResponses = Object.values(responses)
+  const formattedResponses = Object.fromEntries(
+    rawResponses.map((r) => [r.id, r.score])
+  )
 
-    try {
-      // Simulate backend call (mocked in service)
-      const backendRes = await careerService.getCareer({ quizAnswers: rawResponses }, results)
-      console.log('✅ Backend mock response:', backendRes)
+  const results = calculateQuizResults(formattedResponses)
 
-      // Store processed quiz data + recommended careers
-      dispatch(setProcessedData(results))
-      if (backendRes?.careers) dispatch(setRecommendations(backendRes.careers))
+  try {
+    // ✅ Backend call
+    const backendRes = await careerService.getCareer(
+      { quizAnswers: rawResponses },
+      results
+    )
 
-      router.push('/result') // ✅ correct route
-    } catch (err: any) {
-      console.error('❌ Submission failed:', err.message)
-      alert('Something went wrong while submitting your results.')
-    }
+    console.log("✅ Backend Response:", backendRes)
+
+    // ✅ Extract the right structure
+    const recommendationsRaw = backendRes?.data?.recommendations || []
+    const archetype = backendRes?.data?.archetype || {}
+    const feedback = backendRes?.data?.feedback || []
+    const recommendations = recommendationsRaw.map((r: any) => ({
+      icon: r.results.icon,
+      title: r.results.title,
+      slug: r.results.slug,
+      type: r.results.type,
+      confidence: r.results.confidence,
+      description: r.results.description,
+      feedback: r.results.feedback || [],
+      jobs: r.results.jobs || [],
+    }))
+    
+    console.log("Dispatching recommendations:",  
+      recommendations);
+    dispatch(setProcessedData({
+      results,
+      archetype,
+      feedback
+    }))
+
+    dispatch(setRecommendations(recommendations))
+
+    // ✅ Navigate to results page
+    router.push("/result")
+  } catch (err: any) {
+    console.error("❌ Submission failed:", err.message)
+    alert("Something went wrong while submitting your results.")
   }
+}
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-white to-gray-100 py-10 px-6">
