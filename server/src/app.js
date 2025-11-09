@@ -1,6 +1,7 @@
 import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import { errorHandler } from "./middlewares/error.handler.js"
 
 const app = express()
 
@@ -25,4 +26,5 @@ app.use("/api/users", userRouter)
 app.use("/api/career", careerRouter)
 
 
+app.use(errorHandler)
 export { app }

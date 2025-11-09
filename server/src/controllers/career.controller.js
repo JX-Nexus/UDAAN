@@ -6,7 +6,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { careerData } from "../utils/careerData.js";
 
 const careerRecommendation = asyncHandler(async (req, res, next) => {
-  try {
+ 
     const { quizAnswers, processedData } = req.body;
 
     if (!processedData) {
@@ -68,15 +68,7 @@ const careerRecommendation = asyncHandler(async (req, res, next) => {
         "Career recommendations generated successfully ✅"
       )
     );
-  } catch (err) {
-    console.error("❌ Recommendation Error:", err?.message || err);
-
-    if (err instanceof ApiError) {
-      return res.status(err.statusCode).json({ error: err.message });
-    }
-
-    return res.status(500).json({ error: "Internal server error", details: err?.message || String(err) });
-  }
+  
 });
 
 export { careerRecommendation };

@@ -41,7 +41,6 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
 const createUser = asyncHandler(async (req, res, next) => {
   
-  try {
    
     let { name, username, email, age, password } = req.body;
 
@@ -110,12 +109,8 @@ const createUser = asyncHandler(async (req, res, next) => {
     return res
       .status(201)
       .json(new ApiResponse(201, inserted[0], "User registered ✅"));
-  } catch (err) {
-    console.error("createUser error:", err.message);
-    if (err instanceof ApiError)
-      return res.status(err.statusCode).json({ error: err.message });
-    return res.status(500).json({ error: "Internal server error" });
-  }
+
+
 });
 const signIn = asyncHandler(async(req,res)=>{
     const { email, username, password } = req.body;

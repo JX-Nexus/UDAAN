@@ -17,4 +17,5 @@ router.route("/sign-out").post(verifyJWT, signOut)
 router.route("/refresh-token").post(refreshAccessToken)
 router.route("/current-user").get(verifyJWT, getCurrentUser)
 
+
 export default router
