@@ -1,8 +1,10 @@
 // src/db/connectDB.js
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
+// import { drizzle } from "drizzle-orm/neon-http";
+// import { neon } from "@neondatabase/serverless";
+import {drizzle} from "drizzle-orm/node-postgres";
+import {Pool} from "pg";
 import dotenv from "dotenv";
-import * as schema from "../schema/index.js";
+import * as schema from "../schema/index.js"; //adjusting path
 
 dotenv.config();
 
@@ -15,12 +17,17 @@ export const connectDB = () => {
     }
 
     // neon http client
-    const sql = neon(process.env.DATABASE_URL);
+    // const sql = neon(process.env.DATABASE_URL);
+    const sql = new Pool({
+      connectionString: process.env.DATABASE_URL,
+    })
 
     // init drizzle
       db = drizzle(sql, { schema })
+    console.log("\n-----------------------------------------------");
+    console.log("PostgreSQL connected using Drizzle ORM");
+    console.log("-----------------------------------------------");
 
-    console.log("\nPostgreSQL connected using Drizzle ORM");
     return db;
   } catch (err) {
     console.error(" DB connection failed:", err.message);
