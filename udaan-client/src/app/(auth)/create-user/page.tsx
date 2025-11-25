@@ -140,7 +140,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             <InputField
             label="Full Name"
             id="name"
-            placeholder="Jayesh Kathale"
+            placeholder="your name"
             value={formData.name}
             onChange={handleChange}
             error={errors.name}
@@ -148,7 +148,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             <InputField
             label="Username"
             id="username"
-            placeholder="gaminggod12"
+            placeholder="eg. you12"
             value={formData.username}
             onChange={handleChange}
             error={errors.username}
@@ -161,7 +161,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             label="Email"
             id="email"
             type="email"
-            placeholder="JayeshKathale@gmail.com"
+            placeholder="you@gmail.com"
             value={formData.email}
             onChange={handleChange}
             error={errors.email}

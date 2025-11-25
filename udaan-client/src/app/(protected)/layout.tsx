@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import authService from '@/services/auth.service'
 import { useAppDispatch } from '@/lib/hooks'
 import { login, logout } from '@/lib/slice/auth/authSlice'
+import Navbar from './navbar'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -70,6 +71,8 @@ export default function Layout({
   return (
     <div className={inter.className}>
       <ProtectedRoute authentication={true}>
+         <Navbar />
+         <div className="pt-24"></div>
         {children}
       </ProtectedRoute>
     </div>

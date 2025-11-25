@@ -18,7 +18,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
     if (!decoded?.id) throw new ApiError(401, "Invalid token payload");
 
     const rows = await db.select().from(Users).where(eq(Users.id, decoded.id));
-    if (!rows.length) throw new ApiError(401, "Invalid or expired token");
+    if (!rows.length) throw new ApiError(401, "Invalid or expired token"); 
 
     const user = rows[0];
 

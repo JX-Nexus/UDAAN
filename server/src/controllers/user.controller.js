@@ -18,7 +18,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
   const accessToken = userUtils.generateAccessToken(user);
   const refreshToken = userUtils.generateRefreshToken(user);
   const now = new Date();
-
+ 
   if (!refreshToken) throw new ApiError(500, "Token generation failed internally");
 
   await db
@@ -50,7 +50,7 @@ const createUser = asyncHandler(async (req, res, next) => {
     name = name.trim();
     username = username.trim().toLowerCase();
     email = email.trim().toLowerCase();
-    password = password.trim();
+    password = password.trim(); 
 
     if (username.length < 3 || username.length > 30)
       throw new ApiError(400, "Username must be 3–30 chars long");
@@ -212,8 +212,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       throw new ApiError(401, "Refresh token expired or already used");
 
     // issue new tokens
-    const { accessToken, refreshToken: newRefreshToken } =
-      await generateAccessAndRefreshTokens(user.id);
+    const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshTokens(user.id);
 
     // set secure cookies
     const cookieOptions = {

@@ -12,7 +12,7 @@ export const userUtils = {
       memoryCost: 65536,
       parallelism: 1,
     });
-  },
+  }, 
 
     generateObjectId() {
     return crypto.randomBytes(12).toString("hex");
