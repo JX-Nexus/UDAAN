@@ -21,7 +21,7 @@ export const Users = pgTable("users", {
   // access control
   role: varchar("role", { length: 50 }).default("user"),
   status: varchar("status", { length: 50 }).default("active"),
-
+                                                                                                                                                                                                                      
   // optional
   avatarUrl: varchar("avatar_url", { length: 500 }),
 });

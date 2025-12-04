@@ -9,7 +9,8 @@ export default function ResultPage() {
 
   const recommendations = useAppSelector((state) => state.assessment.recommendations)
   const processedData = useAppSelector((state) => state.assessment.processedData)
-  console.log(recommendations)
+  console.log("recommendation " , recommendations , "\n", "Processed data", processedData)
+  
   useEffect(() => {
     if (!recommendations || recommendations.length === 0) {
       router.replace('/quiz')
